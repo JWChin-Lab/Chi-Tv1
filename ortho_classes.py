@@ -278,10 +278,6 @@ class Isoacceptor2(object):
                                       and isinstance(part_t.align, str)]
                           for part_type, part_list in self.all_parts.items()}
 
-        # Removes ASLs that close up
-        self.all_parts['tRNA32-38*'] = [part for part in self.all_parts['tRNA32-38*']
-                                        if (part.seq[0] + part.seq[-1] not in ['CG', 'GC'])]
-
         def comp_checker(part):
             """If comp_arm_strict True, then check that each paired region is complementary"""
             if part.region not in ['tRNA10-13_22-25*', 'tRNA27-31_39-43*', 'tRNA49-53_61-65*']:
@@ -771,7 +767,7 @@ class Isoacceptor2(object):
 
     ########################################
 
-    def select(self, synth_name, output_dir, automatic=False, log_file=None):
+    def select(self, synth_name, output_dir, automatic=False, log_file=None, threshold=None, wtseq=None):
 
         """Selection step.
         Method calculates levenshtein distance between the tRNA and the native tRNA for this synthetase.
@@ -789,8 +785,11 @@ class Isoacceptor2(object):
                 lambda x: ''.join(x), axis=1)
             native_seq = native_seq.iloc[0]
         except TypeError:
-            print('Error in database entry for WT sequence.')
-            native_seq = input('Please enter sequence of native sequence: ')
+            if wtseq:
+                native_seq = wtseq
+            else:
+                print('Error in database entry for WT sequence.')
+                native_seq = input('Please enter sequence of native sequence: ')
         for name, trna in self.trnas.items():
             trna.nat_lev_dist = distance.levenshtein(trna.seq[self.ac], native_seq)
 
@@ -807,51 +806,59 @@ class Isoacceptor2(object):
         plt.clf()
 
         if not automatic:
-            while True:
-                user = input("Cut-off point for distance to native ('x' for exit, 'h' for help)\n>  ")
-                if user.lower() == 'x':
-                    print('Thank you for trying Chi-T!')
-                    sys.exit()
-                elif user.lower() == 'h':
-                    print('This number sets the threshold to how similar the output tRNAs must be to the\n'
-                          'native tRNA. e.g. if a tRNA is being designed for a Saccharomyces cerevisiae\n'
-                          'Trp synthetase ScTrpRS, then a value of 25 would discard any tRNAs greater than\n'
-                          '25 mutations from the anticodon-recoded Saccharomyces cerevisiae Trp-tRNA,\n'
-                          'defined here as Levenshtein distance.')
-                else:
-                    try:
-                        cutoff = float(user)
-                        poss = {name: trna for name, trna in self.trnas.items() if trna.nat_lev_dist <= cutoff}
-                        print(f'{len(poss)} tRNAs <= {cutoff}.')
-                        user_answer = input("Use this cut-off value? ('y' or 'n')\n> ")
-                        if user_answer.lower() == 'y':
-                            self.trnas = poss
-                            print(f'{len(self.trnas)} tRNAs remaining!')
-                            break
-                        elif user_answer.lower() == 'n':
-                            continue
-                        else:
-                            print('User must enter y or n!')
-                            continue
-                    except:
-                        print('Inappropriate value!')
-                        continue
-        else:
-            start = 5
-            end = 30
-            for index, i in enumerate(range(start, end)):
-                cutoff = i
-                poss = {name: trna for name, trna in self.trnas.items() if trna.nat_lev_dist <= cutoff}
-                if len(poss) < 200 or index == 0:
-                    n = abs(200 - len(poss))
-                else:
-                    n_ = abs(200 - len(poss))
-                    if n_ <= n:
-                        self.trnas = poss
+            if threshold:
+                cutoff = threshold
+                self.trnas = {name: trna for name, trna in self.trnas.items() if trna.nat_lev_dist <= cutoff}
+            else:
+                while True:
+                    user = input("Cut-off point for distance to native ('x' for exit, 'h' for help)\n>  ")
+                    if user.lower() == 'x':
+                        print('Thank you for trying Chi-T!')
+                        sys.exit()
+                    elif user.lower() == 'h':
+                        print('This number sets the threshold to how similar the output tRNAs must be to the\n'
+                              'native tRNA. e.g. if a tRNA is being designed for a Saccharomyces cerevisiae\n'
+                              'Trp synthetase ScTrpRS, then a value of 25 would discard any tRNAs greater than\n'
+                              '25 mutations from the anticodon-recoded Saccharomyces cerevisiae Trp-tRNA,\n'
+                              'defined here as Levenshtein distance.')
                     else:
-                        cutoff = i - 1
-                        self.trnas = {name: trna for name, trna in self.trnas.items() if trna.nat_lev_dist <= cutoff}
-                    break
+                        try:
+                            cutoff = float(user)
+                            poss = {name: trna for name, trna in self.trnas.items() if trna.nat_lev_dist <= cutoff}
+                            print(f'{len(poss)} tRNAs <= {cutoff}.')
+                            user_answer = input("Use this cut-off value? ('y' or 'n')\n> ")
+                            if user_answer.lower() == 'y':
+                                self.trnas = poss
+                                print(f'{len(self.trnas)} tRNAs remaining!')
+                                break
+                            elif user_answer.lower() == 'n':
+                                continue
+                            else:
+                                print('User must enter y or n!')
+                                continue
+                        except:
+                            print('Inappropriate value!')
+                            continue
+        else:
+            if threshold:
+                cutoff = threshold
+                self.trnas = {name: trna for name, trna in self.trnas.items() if trna.nat_lev_dist <= cutoff}
+            else:
+                start = 5
+                end = 40
+                for index, i in enumerate(range(start, end)):
+                    cutoff = i
+                    poss = {name: trna for name, trna in self.trnas.items() if trna.nat_lev_dist <= cutoff}
+                    if len(poss) < 200 or index == 0:
+                        n = abs(200 - len(poss))
+                    else:
+                        n_ = abs(200 - len(poss))
+                        if n_ <= n:
+                            self.trnas = poss
+                        else:
+                            cutoff = i - 1
+                            self.trnas = {name: trna for name, trna in self.trnas.items() if trna.nat_lev_dist <= cutoff}
+                        break
 
         if log_file:
             with open(log_file, 'a') as f:
@@ -862,7 +869,7 @@ class Isoacceptor2(object):
 
     #############################################
 
-    def cluster_select(self, num_seqs=4, inplace=False, cluster=True, damp=0.8, convergence_iter=15, preference=-11,
+    def cluster_select(self, num_seqs=4, inplace=False, cluster=True, damp=0.9, convergence_iter=15, preference=-12,
                        log_file=None):
 
         def cluster_meat(damping):
