@@ -117,7 +117,7 @@ if __name__ == '__main__':
         '^\\({5,8}\\.{1,3}\\({4}\\.{5,}\\){4}\\.*\\({4,9}\\.{7}\\){4,9}.*\\.\\({5}\\.{2,}\\){5}\\){5,8}\\.{3,}$')
     ile_pattern = re.compile(
         '^\\({5,8}\\.{1,3}\\({3}\\.{5,}\\){3}\\.*\\({4,9}\\.{7}\\){4,9}.*\\.\\({5}\\.{2,}\\){5}\\){5,8}\\.{3,}$')
-    pat_dict = {synth_name: (trna_pattern if args.amino_acid != 'Ile' else ile_pattern)
+    pat_dict = {synth_name: (ile_pattern if args.amino_acid in ['Ile', 'Leu'] else trna_pattern)
                 for synth_name in args.synth_name}
     if args.pattern:
         pat_df = pd.read_csv(args.pattern, header=None)
@@ -188,7 +188,7 @@ if __name__ == '__main__':
                     iso.iter_trnas = {}
                     break
                 elif accept.lower() == 'n':
-                    print("For help, please refer to our manuscript, or the GitHub page https://github.com/zyzzyva23/Chi-T_v1")
+                    print("For help, please refer to our manuscript, or the GitHub page https://github.com/zyzzyva23/Chi-Tv1")
                     print("Thank you for trying Chi-T!")
                     sys.exit()
                 else:
