@@ -8,15 +8,15 @@ Pipeline creates tRNAs for use in genetic code expansion. tRNAs are designed to 
 
 RNAFold from the ViennaRNA package must be installed and added to the PATH. The ViennaRNA package can be installed from [here](https://www.tbi.univie.ac.at/RNA/#download).
 
-Python 3 must be installed and added to the PATH.
+Python 3 must be installed and added to the PATH. Package versions are compatible with Python 3.7 (and likely other Python 3.x which haven't been tested)
 
-Chi-T has been tested succesfully on Windows 10, macOS, and Ubuntu 18.04. To run with the default tRNADB-CE dataset, we recommend a minimum of 8 GB RAM.
+Chi-T has been tested successfully on Windows 10, macOS, and Ubuntu 18.04. To run with the default tRNADB-CE dataset, we recommend a minimum of 8 GB RAM.
 
 ## Installation
 
 Clone the GitHub repository using
 
-```git clone https://github.com/zyzzyva23/Chi-T_v1.git```
+```git clone https://github.com/zyzzyva23/Chi-Tv1.git```
 
 Or download directly from [https://github.com/zyzzyva23/Chi-Tv1](https://github.com/zyzzyva23/Chi-T_v1)
 
