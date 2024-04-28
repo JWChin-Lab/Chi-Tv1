@@ -1,4 +1,6 @@
 import argparse
+import pandas as pd
+import ast
 
 base_comp = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
 
