@@ -2,6 +2,8 @@
 
  /ˈkaɪtiː/ ('ky-tee')
 
+ *On publication, this Github repository will be made public*
+
 Pipeline creates tRNAs for use in genetic code expansion. tRNAs are designed to be active, orthogonal to the E. coli machinery, and recognised by their corresponding synthetase.
 
 ## Requirements
@@ -59,6 +61,42 @@ Synth Name | Synth ID | tRNA ID | Genome ID
 
 For an example of formatting, see the file test_files/Vir_pro_synth.xlsx
 
+### Identitying synthetases to test using RS-ID
+
+RS-ID can aid in synthetase selection by filtering for tRNAs with similar identity elements and identity parts. Supplying a synthetase, or several synthetases, restricts the search to sequences that pass similarity thresholds to the supplied synthetases' tRNAs. Running the script without supplying a synthetase returns a UMAP projection and clusters of all unique identity sequences in the isoacceptor class given.
+
+To run, a usearch executable must be downloaded, and its file location given in the command line. This executable can be downloaded [here](https://www.drive5.com/usearch/download.html).
+
+An example use case is shown below:
+
+```> python synth_finder.py clean_trnas.csv Arg -o outputs/Pyr_112_output -sf my_synths.xlsx -sn Pyrococcus_synth_112 -d 0.2 -i 1```
+
+#### Arguments
+
+* positional arguments:
+    * file
+        * Clean tRNADB-CE file
+    * amino_acid
+        * Isoacceptor of choice
+
+* Optional arguments:
+    * -h, --help
+        * Show help message and exit
+    * -a, --anticodon
+    * Change all anticodon sequences - has little effect on process
+    * -o, --output_directory
+    * Directory to save all files
+    * -sf, --synth_file:
+    * If specifying a synthetase, must be found in this file in excel format (formatting of file above)
+    * -sn, --synth_name:
+    * Name of user-defined synthetase - name must be found in synth_file
+    * -u, --usearch:
+    * File path of usearch executable
+    * -d, --distance:
+    * Upper threshold for USEARCH distance - default <= 0.2
+    * -i, --identity:
+    * Upper threshold for number of identity element nucleotide differences - default <= 1
+
 ### tRNA Designs
 
 To use Chi-T call the script main.py with the corresponding arguments and options. Use python main.py -h to get a description of all possible inputs. 
@@ -66,7 +104,7 @@ An example use case is shown below
 
 ```> python main.py clean_trnas.csv my_synths.xlsx Pyrococcus_synth_112 Arg -o outputs/Pyr_112_output -l -a CTA TGA CGA```
 
-### Arguments
+#### Arguments
 
 * positional arguments:
     * file
@@ -132,11 +170,11 @@ An example use case is shown below
         * Input: names of parts separated by a space e.g. tRNA1-7_66-72* tRNA27-31_39-43*
         * Part names given by the range of bases (1-7_66-72, 8-9, 10-13_22-25, 14-21_54_60, 26_44-48, 27-31_39-43, 32-38, 49-53_61-65), prefixed by 'tRNA' and suffixed by '*' 
 
-### Example Usage with Arguments
+#### Example Usage with Arguments
 
 ```python main.py tRNA_database.csv synthetase_file.xlsx metSynth1 Met –o output_folder –ip tRNA1-7_66-72* –cp 70 –cf 0.3 0 1500000 0.1 –-length_filt 78 –-anticodons CTA TGA CGA -F 0.6 -D 3 –-frequency 0.4 –-diversity 5 –m –i –p pattern_file.xlsx –t 6```
 
-## Creating Oligos
+### Creating Oligos
 
 oligo_maker.py script included to produce csv file with designs.
 
@@ -150,7 +188,7 @@ oligo_maker.py script included to produce csv file with designs.
 * --reverse_3: sequence to add to 3' end of reverse primer. Default GC
 * --anticodon: Designs to be written to output file will have this anticodon. Default CTA
 
-## Checking a tRNA is in the database
+### Checking a tRNA is in the database
 
 tRNA_check.py script included to check if a tRNA ID is in the clean csv file of all tRNAs. Can be useful since many of the tRNA IDs specified in suppl. tables of Cervettini (2020) are not found in updated versions of tRNADB-CE.
 
