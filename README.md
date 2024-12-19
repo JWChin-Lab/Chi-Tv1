@@ -24,6 +24,8 @@ Once installed, required Python packages can be installed into your environment 
 
 ```pip install -r requirements.txt```
 
+You should note many of these package versions are now 'old', and so conflicts may arise if you attempt to mix the versions in the requirements with other newer versions (especially note the incompatibility with many versions of pandas with numpy 2.0.0 or later)
+
 To test everything is working, navigate to the Chi-T directory and run the following command for a quick demo run on a reduced dataset:
 
 ```python main.py test_files/merged_test.csv test_files/Vir_pro_synth.xlsx Vir_pro Pro -o test_output/run_test -a CTA TGA CGA```
