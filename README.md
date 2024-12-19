@@ -1,6 +1,6 @@
 # Chi-T
 
- /ˌkaɪ ˈtiː/ ('ky-tee')
+ /ˈkaɪ ˈtiː/ ('ky-tee')
 
 Pipeline creates tRNAs for use in genetic code expansion. tRNAs are designed to be active, orthogonal to the E. coli machinery, and recognised by their corresponding synthetase.
 
